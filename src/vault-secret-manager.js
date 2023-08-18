@@ -34,9 +34,6 @@ function VaultSecretManager(){
                 'password': this._smConfig[T23_SM_VAULT_PASS]
             })
         });
-
-        console.log(JSON.stringify(JSON.parse(res1.body)));
-
         var jwt=null;
         var auxjson=null;
         try {
