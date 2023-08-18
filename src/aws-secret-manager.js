@@ -1,6 +1,6 @@
-var SecretManager = require('./secret-manager');
-
 const { SecretsManagerClient, GetSecretValueCommand } = require("@aws-sdk/client-secrets-manager"); 
+
+var SecretManager = require('./secret-manager');
 
 const T23_SM_AWS_REGION="T23_SM_AWS_REGION";
 const T23_SM_AWS_ACCESS_KEY_ID="T23_SM_AWS_ACCESS_KEY_ID";
