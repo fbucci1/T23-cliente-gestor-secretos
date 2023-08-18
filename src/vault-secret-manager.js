@@ -1,19 +1,25 @@
+var SecretManager = require('./secret-manager');
+
+const T23_SM_VAULT_ADDR="T23_SM_VAULT_ADDR";
+const T23_SM_VAULT_USER="T23_SM_VAULT_USER";
+const T23_SM_VAULT_PASS="T23_SM_VAULT_PASS";
+
 function VaultSecretManager(){
 
     this.initialize = function (smConfig) {
-        if (!smConfig.T23_SM_PROVIDER){
+        if (!smConfig[SecretManager.T23_SM_PROVIDER]){
             throw new Error("Unable to initialize VaultSecretManager. T23_SM_PROVIDER property is missing.");
         }
-        if (!smConfig.T23_SM_KEY ){
+        if (!smConfig[SecretManager.T23_SM_KEY] ){
             throw new Error("Unable to initialize VaultSecretManager. T23_SM_KEY property is missing.");
         }
-        if (!smConfig.T23_SM_VAULT_ADDR){
+        if (!smConfig[T23_SM_VAULT_ADDR]){
             throw new Error("Unable to initialize VaultSecretManager. T23_SM_VAULT_ADDR property is missing.");
         }
-        if (!smConfig.T23_SM_VAULT_USER){
+        if (!smConfig[T23_SM_VAULT_USER]){
             throw new Error("Unable to initialize VaultSecretManager. T23_SM_VAULT_USER property is missing.");
         }
-        if (!smConfig.T23_SM_VAULT_PASS){
+        if (!smConfig[T23_SM_VAULT_PASS]){
             throw new Error("Unable to initialize VaultSecretManager. T23_SM_VAULT_PASS property is missing.");
         }
         this._smConfig=smConfig;
@@ -22,10 +28,10 @@ function VaultSecretManager(){
     this._login = function () {
         var request = require('sync-request');
         // Logs in and retrieves the JWT
-        var apiUrl=this._smConfig.T23_SM_VAULT_ADDR+"/v1/auth/userpass/login/"+this._smConfig.T23_SM_VAULT_USER;
+        var apiUrl=this._smConfig[T23_SM_VAULT_ADDR]+"/v1/auth/userpass/login/"+this._smConfig[T23_SM_VAULT_USER];
         var res1 = request('POST', apiUrl, {
             body: JSON.stringify({
-                'password': this._smConfig.T23_SM_VAULT_PASS
+                'password': this._smConfig[T23_SM_VAULT_PASS]
             })
         });
         var jwt=null;
@@ -56,7 +62,7 @@ function VaultSecretManager(){
         var request = require('sync-request');
         //
         var data=null;
-        var apiUrl=this._smConfig.T23_SM_VAULT_ADDR+"/v1/secret/data/"+this._smConfig.T23_SM_KEY;
+        var apiUrl=this._smConfig[T23_SM_VAULT_ADDR]+"/v1/secret/data/"+this._smConfig[SecretManager.T23_SM_KEY];
         try {
             var res1 = request('GET', apiUrl, {
                 headers: {
@@ -83,8 +89,14 @@ function VaultSecretManager(){
     
 }
 
+VaultSecretManager.prototype=SecretManager.ISecretManager.prototype;
+VaultSecretManager.prototype.constructor=SecretManager.ISecretManager.prototype.constructor;
+
 exports.getInstance = function (smConfig) {
     var instance=new VaultSecretManager();
     instance.initialize(smConfig);
     return instance;
 }
+exports.T23_SM_VAULT_ADDR=T23_SM_VAULT_ADDR;
+exports.T23_SM_VAULT_USER=T23_SM_VAULT_USER;
+exports.T23_SM_VAULT_PASS=T23_SM_VAULT_PASS;

@@ -1,21 +1,27 @@
+var SecretManager = require('./secret-manager');
+
 const { SecretsManagerClient, GetSecretValueCommand } = require("@aws-sdk/client-secrets-manager"); 
+
+const T23_SM_AWS_REGION="T23_SM_AWS_REGION";
+const T23_SM_AWS_ACCESS_KEY_ID="T23_SM_AWS_ACCESS_KEY_ID";
+const T23_SM_AWS_SECRET_ACCESS_KEY="T23_SM_AWS_SECRET_ACCESS_KEY";
 
 function AWSSecretManager(){
 
     this.initialize = function (smConfig) {
-        if (!smConfig.T23_SM_PROVIDER){
+        if (!smConfig[SecretManager.T23_SM_PROVIDER]){
             throw new Error("Unable to initialize VaultSecretManager. T23_SM_PROVIDER property is missing.");
         }
-        if (!smConfig.T23_SM_KEY ){
+        if (!smConfig[SecretManager.T23_SM_KEY] ){
             throw new Error("Unable to initialize VaultSecretManager. T23_SM_KEY property is missing.");
         }
-        if (!smConfig.T23_SM_AWS_REGION){
+        if (!smConfig[T23_SM_AWS_REGION]){
             throw new Error("Unable to initialize VaultSecretManager. T23_SM_AWS_REGION property is missing.");
         }
-        if (!smConfig.T23_SM_AWS_ACCESS_KEY_ID){
+        if (!smConfig[T23_SM_AWS_ACCESS_KEY_ID]){
             throw new Error("Unable to initialize VaultSecretManager. T23_SM_AWS_ACCESS_KEY_ID property is missing.");
         }
-        if (!smConfig.T23_SM_AWS_SECRET_ACCESS_KEY){
+        if (!smConfig[T23_SM_AWS_SECRET_ACCESS_KEY]){
             throw new Error("Unable to initialize VaultSecretManager. T23_SM_AWS_SECRET_ACCESS_KEY property is missing.");
         }
         this._smConfig=smConfig;
@@ -24,11 +30,14 @@ function AWSSecretManager(){
     this.getSecrets = function () {
         try{
             var config = { 
-                region: this._smConfig.T23_SM_AWS_REGION, 
-                credentials: { accessKeyId: this._smConfig.T23_SM_AWS_ACCESS_KEY_ID, secretAccessKey: this._smConfig.T23_SM_AWS_SECRET_ACCESS_KEY } 
+                region: this._smConfig[T23_SM_AWS_REGION], 
+                credentials: { 
+                    accessKeyId: this._smConfig[T23_SM_AWS_ACCESS_KEY_ID], 
+                    secretAccessKey: this._smConfig[T23_SM_AWS_SECRET_ACCESS_KEY] 
+                } 
             };
             const client = new SecretsManagerClient(config);
-            const input = { SecretId: this._smConfig.T23_SM_KEY };
+            const input = { SecretId: this._smConfig[SecretManager.T23_SM_KEY] };
             const command = new GetSecretValueCommand(input);
             const response = client.send(command);
             
@@ -69,8 +78,15 @@ function AWSSecretManager(){
     
 }
 
+AWSSecretManager.prototype=SecretManager.ISecretManager.prototype;
+AWSSecretManager.prototype.constructor=SecretManager.ISecretManager.prototype.constructor;
+
 exports.getInstance = function (smConfig) {
     var instance=new AWSSecretManager();
     instance.initialize(smConfig);
     return instance;
 }
+
+exports.T23_SM_AWS_REGION=T23_SM_AWS_REGION;
+exports.T23_SM_AWS_ACCESS_KEY_ID=T23_SM_AWS_ACCESS_KEY_ID;
+exports.T23_SM_AWS_SECRET_ACCESS_KEY=T23_SM_AWS_SECRET_ACCESS_KEY;
