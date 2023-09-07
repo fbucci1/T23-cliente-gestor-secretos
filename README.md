@@ -1,15 +1,2 @@
 # T23-cliente-gestor-secretos
-
-//
-//T23_SM_PROVIDER
-//T23_SM_KEY
-//
-//T23_SM_VAULT_ADDR
-//T23_SM_VAULT_USER
-//T23_SM_VAULT_PASS
-//
-//T23_SM_AWS_REGION
-//T23_SM_AWS_ACCESS_KEY_ID
-//T23_SM_AWS_SECRET_ACCESS_KEY
-//
-
+Fuentes del módulo cliente-gestor-secretos. Contiene la interfaz e implementación para acceder a los secretos en gestores de claves secretas.
